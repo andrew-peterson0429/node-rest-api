@@ -23,7 +23,8 @@ router.post("/register", async (req, res) => {
         res.status(200).json(user);
 
     } catch(err){
-        console.log(err);
+        // Responds internal server error and error message
+        res.status(500).json(err);
     }
 });
 
@@ -48,7 +49,8 @@ router.post("/login", async (req, res) => {
         res.status(200).json(user);
 
     } catch(err) {
-        console.log(err);
+        // Responds internal server error and error message
+        res.status(500).json(err);
     }
 })
 
