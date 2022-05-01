@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
+const { response } = require("express");
 
 // User routes here
 
@@ -56,8 +57,21 @@ router.delete("/:id", async(req, res) => {
 });
 
 
-
 // Get a User
+router.get("/:id", async(req,res) => {
+    // Find user by id
+    try {
+        const user = await User.findById(req.params.id);
+        // Unecessary user properties with the _doc which carries the document
+        const {password, updatedAt, ...other} = user._doc;
+
+        // Return success message and other user data
+        response.status(200).json(other);
+    } catch {
+        // Returns internal server error
+        res.status(500).json(err);
+    }
+});
 
 
 // Follow a User
