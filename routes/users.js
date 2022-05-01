@@ -41,7 +41,7 @@ router.put("/:id", async(req, res) => {
 router.delete("/:id", async(req, res) => {
     // check if user id doesn't match with this id, return error
     if (req.body.userId === req.params.id || req.user.body.isAdmin) {
-        
+
         try {
             // Finds user by their id and sets all inputs inside this body (can be params or body)
             await User.findByIdAndDelete(req.params.id)
@@ -75,7 +75,34 @@ router.get("/:id", async(req,res) => {
 
 
 // Follow a User
-
+ router.put("/:id/follow", async (req, res) => {
+    // Check if user does not have the same id as person to follow
+    if(req.body.userId !== req.params.id) {
+        
+        try {
+            // find user with id
+            const user = await User.findById(req.params.id);
+            // Current user trying to make request
+            const currentUser = await User.findById(req.body.userId);
+            // If the trying to follow user already includes currentUser, return error
+            if (!user.followers.includes(req.body.userId)) {
+                // Push userIds into followers array
+                await user.updateOne({ $push: { followers: req.body.userId }});
+                await currentUser.updateOne({ $push: { following: req.params.id }});
+                res.status(200).json("Following user")
+            } else {
+                // Responds access to resource is forbbiden code
+                res.status(403).json("You are already following this user");
+            }
+        } catch (err) {
+            // Returns internal server error
+            res.status(500).json(err);
+        }
+    } else {
+        // Responds with forbidden status and error message if user is the same
+        res.status(403).json('You cannot follow yourself');
+    }
+ })
 
 // Unfollow a user
 
