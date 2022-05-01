@@ -75,7 +75,7 @@ router.get("/:id", async(req,res) => {
 
 
 // Follow a User
- router.put("/:id/follow", async (req, res) => {
+router.put("/:id/follow", async (req, res) => {
     // Check if user does not have the same id as person to follow
     if(req.body.userId !== req.params.id) {
         
@@ -86,7 +86,7 @@ router.get("/:id", async(req,res) => {
             const currentUser = await User.findById(req.body.userId);
             // If the trying to follow user already includes currentUser, return error
             if (!user.followers.includes(req.body.userId)) {
-                // Push userIds into followers array
+                // Push userIds into followers and following array
                 await user.updateOne({ $push: { followers: req.body.userId }});
                 await currentUser.updateOne({ $push: { following: req.params.id }});
                 res.status(200).json("Following user")
@@ -102,9 +102,38 @@ router.get("/:id", async(req,res) => {
         // Responds with forbidden status and error message if user is the same
         res.status(403).json('You cannot follow yourself');
     }
- })
+})
 
 // Unfollow a user
+
+router.put("/:id/unfollow", async (req, res) => {
+    // Check if user does not have the same id as person to follow
+    if(req.body.userId !== req.params.id) {
+        
+        try {
+            // find user with id
+            const user = await User.findById(req.params.id);
+            // Current user trying to make request
+            const currentUser = await User.findById(req.body.userId);
+            // If following user already includes currentUser, return error
+            if (user.followers.includes(req.body.userId)) {
+                // Pull userIds from followers and following array
+                await user.updateOne({ $pull: { followers: req.body.userId }});
+                await currentUser.updateOne({ $pull: { following: req.params.id }});
+                res.status(200).json("Unfollowed user")
+            } else {
+                // Responds access to resource is forbbiden code
+                res.status(403).json("You are already not following this user");
+            }
+        } catch (err) {
+            // Returns internal server error
+            res.status(500).json(err);
+        }
+    } else {
+        // Responds with forbidden status and error message if user is the same
+        res.status(403).json('You cannot unfollow yourself');
+    }
+});
 
 
 
