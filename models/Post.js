@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { stringify } = require("nodemon/lib/utils");
+
 
 //Schemas
 
@@ -24,4 +24,4 @@ const PostSchema = new mongoose.Schema(
 {timestamps: true}
 );
 
-module.exports = mongoose.model("Post", UserSchema);
+module.exports = mongoose.model("Post", PostSchema);
