@@ -77,6 +77,16 @@ router.put("/:id/like", async (req, res) => {
 });
 
 // Get post
+router.get("/:id", async (req, res) => {
+    try {
+        //find post by requests paramater id and returns successful response with post
+        const post = await Post.findById(req.params.id);
+        res.status(200).json(post);
+    } catch(err) {
+        // Respond with internal server error
+        res.status(500).json(err)
+    }
+});
 
 // Get timeline posts
 
